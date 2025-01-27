@@ -1,5 +1,4 @@
 @echo off
 :loop
-    START
-    msg * " "
+    msg * "Close me!"
 goto loop

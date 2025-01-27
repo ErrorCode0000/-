@@ -1,5 +1,5 @@
 @echo off
 :loop
     START
-    msg * ""
+    msg * " "
 goto loop

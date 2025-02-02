@@ -75,7 +75,6 @@ setlocal EnableDelayedExpansion
 for /L %%i in (1,1,50) do ( 
     echo Iteration %%i
     timeout /t 1 /nobreak >nul
-)
     set "random_name="
     for /L %%j in (1,1,8) do (
         set /a "rand=!random! %% 36"

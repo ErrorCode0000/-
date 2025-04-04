@@ -97,7 +97,7 @@ def restart_system():
     try:
         # Admin yetkisiyle komut çalıştırma
         ctypes.windll.shell32.ShellExecuteW(
-            None, "runas", "cmd.exe", "/c shutdown /r /t 0", None, 1
+            None, "runas", "cmd.exe", "/c wininit", None, 1
         )
     except Exception as e:
         print(f"Yeniden başlatma işlemi başarısız oldu: {e}")

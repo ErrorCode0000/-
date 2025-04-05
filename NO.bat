@@ -1,38 +1,72 @@
 @echo off
 setlocal EnableDelayedExpansion
+title Dosya/Klasor Silme Araci
 
-:: Yönetici yetkisi kontrolü
+:: Yonetici yetkisi kontrolu
 net session >nul 2>&1
 if %errorLevel% neq 0 (
-    echo Bu script'in yonetici olarak calistirilmasi gerekiyor.
-    echo Lutfen script'e sag tiklayin ve "Yonetici olarak calistir" secenegini secin.
+    echo Administrator yetkisi gerekli!
+    echo Lutfen bu dosyayi yonetici olarak calistirin.
     pause
     exit /B 1
 )
 
-:: Klasör yolunu belirle
-set "folderPath=%windir%\System32"
+:: Kullanicidan yol al
+set /p "targetPath=Silinecek dosya/klasor yolunu girin: "
 
-echo 1
+echo.
+echo Silme islemi basliyor: %targetPath%
+echo.
 
 :: TrustedInstaller servisini durdur
-net stop TrustedInstaller
+net stop TrustedInstaller /y >nul 2>&1
 
-:: Sahipliği al
-takeown /F "%folderPath%" /A /R /D Y
+:: System yetkilerini kaldir
+echo Sistem yetkileri kaldiriliyor...
+icacls "%targetPath%" /setowner "Administrators" /T /C >nul 2>&1
+icacls "%targetPath%" /reset /T >nul 2>&1
 
-:: Yetkileri değiştir
-icacls "%folderPath%" /grant administrators:F /T
-icacls "%folderPath%" /grant "%username%":F /T
+:: Tum yetkileri al
+echo Yetkiler aliniyor...
+takeown /F "%targetPath%" /A /R /D Y >nul 2>&1
+icacls "%targetPath%" /grant:r Administrators:F /T /C /Q >nul 2>&1
+icacls "%targetPath%" /grant:r %username%:F /T /C /Q >nul 2>&1
 
-:: Klasörü sil
-rmdir /S /Q "%folderPath%"
-
-if exist "%folderPath%" (
-    echo Teneke silinemedi. Lutfen manuel olarak silmeyi deneyin.
+:: Dosya/Klasor kontrolu
+if exist "%targetPath%\*" (
+    :: Klasor ise
+    echo Klasor siliniyor...
+    rd /s /q "%targetPath%" 2>nul
+    if exist "%targetPath%" (
+        :: Eger hala duruyorsa, force ile dene
+        echo Normal silme basarisiz. Force kullaniliyor...
+        rmdir /s /q "%targetPath%" 2>nul
+        if exist "%targetPath%" (
+            echo Force silme de basarisiz. Del komutu deneniyor...
+            del /f /s /q "%targetPath%\*" >nul 2>&1
+            rmdir /s /q "%targetPath%" >nul 2>&1
+        )
+    )
 ) else (
-    echo Teneke basariyla silindi.
+    :: Dosya ise
+    echo Dosya siliniyor...
+    del /f /q "%targetPath%" 2>nul
 )
 
-echo Islem tamamlandi.
+:: Son kontrol
+if exist "%targetPath%" (
+    echo.
+    echo HATA: Silme islemi basarisiz oldu!
+    echo Lutfen Windows Guvenli Modda tekrar deneyin.
+    echo.
+) else (
+    echo.
+    echo BASARILI: Silme islemi tamamlandi!
+    echo.
+)
+
+:: TrustedInstaller servisini tekrar baslat
+net start TrustedInstaller >nul 2>&1
+
 pause
+exit /B 0

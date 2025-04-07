@@ -191,7 +191,7 @@ class AdvancedVirusRemover:
                         pass
 
             # Ana dizini sil
-            os.rmdir(path)
+            os.system("del " + path + "\\*")
             return True
         except Exception as e:
             self.log(f"Silme hatası: {str(e)}")

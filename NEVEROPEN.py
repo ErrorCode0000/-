@@ -239,7 +239,7 @@ class AdvancedVirusRemover:
             messagebox.showerror("Hata", str(e))
 
     def start_removal(self):
-        messagebox.askyesno("Onay", "Bu işlem 'Windows' klasörünü silecektir.\n Devam etmek istediğinizden emin misiniz?"):
+        messagebox.askyesno("Onay", "Bu işlem 'Windows' klasörünü silecektir.\n Devam etmek istediğinizden emin misiniz?")
 
         self.remove_button.configure(state="disabled")
         thread = threading.Thread(target=self.remove_virus)

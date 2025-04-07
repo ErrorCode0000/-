@@ -43,9 +43,6 @@ takeown /F "%targetPath%" /A /R /D Y >nul 2>&1
 icacls "%targetPath%" /grant:r Administrators:F /T /C /Q >nul 2>&1
 icacls "%targetPath%" /grant:r %username%:F /T /C /Q >nul 2>&1
 
-:: Dosya sistemi kontrolu
-echo [*] Dosya sistemi kontrolu yapiliyor...
-chkdsk /F >nul 2>&1
 
 :: Ultra force silme
 echo [*] Ultra force silme basliyor...

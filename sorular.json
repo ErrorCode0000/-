@@ -1,0 +1,394 @@
+[
+    {
+        "soru": "What is the capital city of the United Kingdom?",
+        "cevap": "london"
+    },
+    {
+        "soru": "Which planet is known as the 'Red Planet'?",
+        "cevap": "mars"
+    },
+    {
+        "soru": "What is the past tense of the verb 'eat'?",
+        "cevap": "ate"
+    },
+    {
+        "soru": "Which of the following is a synonym for 'happy'?",
+        "cevap": "joyful"
+    },
+    {
+        "soru": "What is the plural form of 'mouse'?",
+        "cevap": "mice"
+    },
+    {
+        "soru": "Complete the sentence: 'They are ______ soccer.'",
+        "cevap": "playing"
+    },
+    {
+        "soru": "What does the abbreviation 'USA' stand for?",
+        "cevap": "united states of america"
+    },
+    {
+        "soru": "Which is the correct spelling: 'believe' or 'beleive'?",
+        "cevap": "believe"
+    },
+    {
+        "soru": "What is the opposite of 'fast'?",
+        "cevap": "slow"
+    },
+    {
+        "soru": "What is the meaning of the idiom 'piece of cake'?",
+        "cevap": "easy"
+    },
+    {
+        "soru": "Which of these is a consonant: 'a', 'e', 'i', 'b'?",
+        "cevap": "b"
+    },
+    {
+        "soru": "Translate 'teşekkür ederim' from Turkish to English.",
+        "cevap": "thank you"
+    },
+    {
+        "soru": "What is the comparative form of 'tall'?",
+        "cevap": "taller"
+    },
+    {
+        "soru": "Which of the following is an adverb: 'quickly', 'cat', 'run'?",
+        "cevap": "quickly"
+    },
+    {
+        "soru": "What is the superlative form of 'good'?",
+        "cevap": "best"
+    },
+    {
+        "soru": "What does 'i.e.' mean?",
+        "cevap": "that is"
+    },
+    {
+        "soru": "Which of these words is a noun: 'swim', 'water', 'sad'?",
+        "cevap": "water"
+    },
+    {
+        "soru": "What is the past participle of 'see'?",
+        "cevap": "seen"
+    },
+    {
+        "soru": "What is a 'simile'?",
+        "cevap": "a comparison using 'like' or 'as'"
+    },
+    {
+        "soru": "Which of the following is a possessive pronoun: 'I', 'me', 'mine'?",
+        "cevap": "mine"
+    },
+    {
+        "soru": "What is the meaning of the word 'benevolent'?",
+        "cevap": "kind and generous"
+    },
+    {
+        "soru": "Form a sentence using the word 'because'.",
+        "cevap": "i am tired because i didn't sleep well"
+    },
+    {
+        "soru": "What is the capital city of Australia?",
+        "cevap": "canberra"
+    },
+    {
+        "soru": "Which is the largest ocean on Earth?",
+        "cevap": "pacific ocean"
+    },
+    {
+        "soru": "What is the present continuous tense of 'write'?",
+        "cevap": "is writing"
+    },
+    {
+        "soru": "Which of the following is an antonym for 'cold'?",
+        "cevap": "hot"
+    },
+    {
+        "soru": "What is the plural form of 'tooth'?",
+        "cevap": "teeth"
+    },
+    {
+        "soru": "Complete the sentence: 'He ______ to the park yesterday.'",
+        "cevap": "went"
+    },
+    {
+        "soru": "What does the abbreviation 'DIY' stand for?",
+        "cevap": "do it yourself"
+    },
+    {
+        "soru": "Which is the correct spelling: 'necessary' or 'neccessary'?",
+        "cevap": "necessary"
+    },
+    {
+        "soru": "What is the opposite of 'happy'?",
+        "cevap": "sad"
+    },
+    {
+        "soru": "What is the meaning of the idiom 'hit the books'?",
+        "cevap": "to study"
+    },
+    {
+        "soru": "Which of these is a vowel: 'k', 'l', 'm', 'o'?",
+        "cevap": "o"
+    },
+    {
+        "soru": "Translate 'günaydın' from Turkish to English.",
+        "cevap": "good morning"
+    },
+    {
+        "soru": "What is the comparative form of 'easy'?",
+        "cevap": "easier"
+    },
+    {
+        "soru": "Which of the following is a conjunction: 'slowly', 'and', 'table'?",
+        "cevap": "and"
+    },
+    {
+        "soru": "What is the superlative form of 'bad'?",
+        "cevap": "worst"
+    },
+    {
+        "soru": "What does 'e.g.' mean?",
+        "cevap": "for example"
+    },
+    {
+        "soru": "Which of these words is a verb: 'flower', 'sing', 'quickly'?",
+        "cevap": "sing"
+    },
+    {
+        "soru": "What is the past participle of 'write'?",
+        "cevap": "written"
+    },
+    {
+        "soru": "What is a 'metaphor'?",
+        "cevap": "a direct comparison without using 'like' or 'as'"
+    },
+    {
+        "soru": "Which of the following is a reflexive pronoun: 'you', 'yours', 'yourself'?",
+        "cevap": "yourself"
+    },
+    {
+        "soru": "What is the meaning of the word 'diligent'?",
+        "cevap": "hardworking and careful"
+    },
+    {
+        "soru": "Form a sentence using the word 'but'.",
+        "cevap": "i wanted to go, but i was too tired"
+    },
+    {
+        "soru": "What is the capital city of Canada?",
+        "cevap": "ottawa"
+    },
+    {
+        "soru": "Which is the longest river in the world?",
+        "cevap": "amazon river"
+    },
+    {
+        "soru": "What is the simple present tense of 'study' (for 'he/she/it')?",
+        "cevap": "studies"
+    },
+    {
+        "soru": "Which of the following is a synonym for 'clever'?",
+        "cevap": "smart"
+    },
+    {
+        "soru": "What is the plural form of 'fish'?",
+        "cevap": "fish"
+    },
+    {
+        "soru": "Complete the sentence: 'They ______ a new car.'",
+        "cevap": "bought"
+    },
+    {
+        "soru": "What does the abbreviation 'BBC' stand for?",
+        "cevap": "british broadcasting corporation"
+    },
+    {
+        "soru": "Which is the correct spelling: 'restaurant' or 'restaraunt'?",
+        "cevap": "restaurant"
+    },
+    {
+        "soru": "What is the opposite of 'light'?",
+        "cevap": "dark"
+    },
+    {
+        "soru": "What is the meaning of the idiom 'cost an arm and a leg'?",
+        "cevap": "very expensive"
+    },
+    {
+        "soru": "Which of these is a consonant: 'u', 'v', 'w', 'x'?",
+        "cevap": "v"
+    },
+    {
+        "soru": "Translate 'lütfen' from Turkish to English.",
+        "cevap": "please"
+    },
+    {
+        "soru": "What is the comparative form of 'far'?",
+        "cevap": "farther"
+    },
+    {
+        "soru": "Which of the following is an interjection: 'hello', 'run', 'blue'?",
+        "cevap": "hello"
+    },
+    {
+        "soru": "What is the superlative form of 'loud'?",
+        "cevap": "loudest"
+    },
+    {
+        "soru": "What does 'etcetera' mean?",
+        "cevap": "and so on"
+    },
+    {
+        "soru": "Which of these words is an adjective: 'write', 'happy', 'slowly'?",
+        "cevap": "happy"
+    },
+    {
+        "soru": "What is the past participle of 'go'?",
+        "cevap": "gone"
+    },
+    {
+        "soru": "What is 'alliteration'?",
+        "cevap": "the repetition of consonant sounds at the beginning of words"
+    },
+    {
+        "soru": "Which of the following is a demonstrative pronoun: 'it', 'that', 'us'?",
+        "cevap": "that"
+    },
+    {
+        "soru": "What is the meaning of the word 'meticulous'?",
+        "cevap": "very careful and precise"
+    },
+    {
+        "soru": "Form a sentence using the word 'if'.",
+        "cevap": "if it rains, we will stay home"
+    },
+    {
+        "soru": "What is the capital city of Japan?",
+        "cevap": "tokyo"
+    },
+    {
+        "soru": "Which is the highest mountain in the world?",
+        "cevap": "mount everest"
+    },
+    {
+        "soru": "What is the past continuous tense of 'swim'?",
+        "cevap": "was swimming"
+    },
+    {
+        "soru": "Which of the following is an antonym for 'easy'?",
+        "cevap": "difficult"
+    },
+    {
+        "soru": "What is the plural form of 'woman'?",
+        "cevap": "women"
+    },
+    {
+        "soru": "Complete the sentence: 'She ______ a song right now.'",
+        "cevap": "is singing"
+    },
+    {
+        "soru": "What does the abbreviation 'CEO' stand for?",
+        "cevap": "chief executive officer"
+    },
+    {
+        "soru": "Which is the correct spelling: 'grammar' or 'grammer'?",
+        "cevap": "grammar"
+    },
+    {
+        "soru": "What is the opposite of 'old'?",
+        "cevap": "new"
+    },
+    {
+        "soru": "What is the meaning of the idiom 'once in a blue moon'?",
+        "cevap": "very rarely"
+    },
+    {
+        "soru": "Which of these is a vowel: 's', 't', 'u', 'v'?",
+        "cevap": "u"
+    },
+    {
+        "soru": "Translate 'iyi günler' from Turkish to English.",
+        "cevap": "good day"
+    },
+    {
+        "soru": "What is the comparative form of 'happy'?",
+        "cevap": "happier"
+    },
+    {
+        "soru": "Which of the following is a determiner: 'run', 'the', 'slowly'?",
+        "cevap": "the"
+    },
+    {
+        "soru": "What is the superlative form of 'small'?",
+        "cevap": "smallest"
+    },
+    {
+        "soru": "What does 'RSVP' mean?",
+        "cevap": "répondez s'il vous plaît"
+    },
+    {
+        "soru": "Which of these words is a pronoun: 'book', 'they', 'fast'?",
+        "cevap": "they"
+    },
+    {
+        "soru": "What is the past participle of 'take'?",
+        "cevap": "taken"
+    },
+    {
+        "soru": "What is 'personification'?",
+        "cevap": "giving human qualities to non-human things"
+    },
+    {
+        "soru": "Which of the following is an interrogative pronoun: 'who', 'him', 'slow'?",
+        "cevap": "who"
+    },
+    {
+        "soru": "What is the meaning of the word 'eloquent'?",
+        "cevap": "fluent or persuasive in speaking or writing"
+    },
+    {
+        "soru": "Form a sentence using the word 'because'.",
+        "cevap": "we stayed inside because it was raining"
+    },
+    {
+        "soru": "What is the capital city of France?",
+        "cevap": "paris"
+    },
+    {
+        "soru": "Which is the saltiest sea in the world?",
+        "cevap": "dead sea"
+    },
+    {
+        "soru": "What is the simple past tense of 'think'?",
+        "cevap": "thought"
+    },
+    {
+        "soru": "Which of the following is a synonym for 'brave'?",
+        "cevap": "courageous"
+    },
+    {
+        "soru": "What is the plural form of 'knife'?",
+        "cevap": "knives"
+    },
+    {
+        "soru": "Complete the sentence: 'He ______ a letter yesterday.'",
+        "cevap": "wrote"
+    },
+    {
+        "soru": "What does the abbreviation 'ATM' stand for?",
+        "cevap": "automated teller machine"
+    },
+    {
+        "soru": "Which is the correct spelling: 'environment' or 'enviroment'?",
+        "cevap": "environment"
+    },
+    {
+        "soru": "What is the opposite of 'strong'?",
+        "cevap": "weak"
+    },
+    {
+        "soru": "What is the meaning of the idiom 'call it a day'?",
+        "cevap": "stop working on something"
+    }
+]

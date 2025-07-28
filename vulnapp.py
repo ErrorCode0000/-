@@ -1,28 +1,21 @@
-# deploy_vulnerable_app.py
-# A script to automatically deploy a vulnerable Flask web application
-# as a systemd service on Debian-based systems.
+# create_project.py
+# A self-contained Python script to create the necessary files and directories
+# for a vulnerable Flask web application.
+# This script does NOT install any system services and does NOT require sudo.
 #
-# USAGE: sudo python3 deploy_vulnerable_app.py
+# USAGE: python3 create_project.py
 #
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # !!!         WARNING            !!!
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# This script deploys a web application with a DELIBERATE and SEVERE
-# command injection vulnerability. It is intended for educational purposes
-# (like TryHackMe, CTF) ONLY.
-#
-# DO NOT run this on a production server or any machine with sensitive data.
-# You are responsible for any consequences.
+# The generated application has a DELIBERATE command injection vulnerability
+# for educational purposes (TryHackMe, CTF). DO NOT use it on a production server.
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 import os
-import sys
-import getpass
-import subprocess
 
 # --- Configuration ---
-# You can change these values if you want.
-SERVICE_NAME = "vulnerablewebapp"
+PROJECT_NAME = "VulnerableWebApp"
 FLASK_APP_FILENAME = "app.py"
 HTML_FILENAME = "index.html"
 FLASK_PORT = 8080
@@ -30,41 +23,51 @@ FLASK_PORT = 8080
 # --- Code Templates ---
 
 # Template for the Flask Application (app.py)
+# All code and comments are in English for the TryHackMe context.
 FLASK_APP_CODE = f"""
 import subprocess
 from flask import Flask, request, render_template
 
+# Initialize the Flask application
 app = Flask(__name__)
 
-# This route serves the main HTML page
+# This route serves the main HTML page from the 'templates' folder
 @app.route('/')
 def index():
+    # Renders and returns the content of index.html to the browser
     return render_template('{HTML_FILENAME}')
 
-# This route processes the ping request and is VULNERABLE
+# This route processes the ping request and contains the VULNERABILITY
 @app.route('/ping')
 def ping():
-    ip_address = request.args.get('ip', '') # Get 'ip' parameter from user
+    # Get the 'ip' parameter from the URL (e.g., ?ip=8.8.8.8)
+    ip_address = request.args.get('ip', '')
 
     # WARNING: The 'shell=True' argument makes this code vulnerable to command injection.
-    # It directly passes the user's input to the system's shell.
+    # It allows special characters like ';' or '&&' to be interpreted by the system's shell.
     try:
-        command = f"ping -c 3 {{ip_address}}"
+        command_to_run = f"ping -c 3 {{ip_address}}"
         result = subprocess.run(
-            command,
+            command_to_run,
             shell=True,
             capture_output=True,
             text=True,
             timeout=10
         )
+        # Combine standard output and standard error for display
         output = result.stdout + result.stderr
     except subprocess.TimeoutExpired:
-        output = "Error: Command timed out."
+        output = "Error: The command took too long to execute."
 
+    # Return the output formatted inside a <pre> tag for readability
     return f"<pre>Executing command...\\n\\n{{output}}</pre>"
 
+# This block runs the app when the script is executed directly
 if __name__ == "__main__":
-    app.run(debug=False, host='0.0.0.0', port={FLASK_PORT})
+    # Runs the development server.
+    # host='0.0.0.0' makes it accessible from other devices on the same network.
+    print(f"Starting Flask server on http://0.0.0.0:{FLASK_PORT}")
+    app.run(host='0.0.0.0', port={FLASK_PORT})
 """
 
 # Template for the HTML User Interface (index.html)
@@ -74,24 +77,24 @@ HTML_CODE = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Ping Tool</title>
+    <title>System Command Tool</title>
     <style>
-        body {{ font-family: sans-serif; background-color: #1a1a1a; color: #e0e0e0; margin: 40px; text-align: center; }}
-        .container {{ max-width: 700px; margin: auto; background: #2a2a2a; padding: 30px; border-radius: 8px; border: 1px solid #444; }}
-        h1 {{ color: #ff4d4d; }}
+        body {{ font-family: monospace; background-color: #0d1117; color: #c9d1d9; margin: 40px; text-align: center; }}
+        .container {{ max-width: 700px; margin: auto; background: #161b22; padding: 30px; border-radius: 8px; border: 1px solid #30363d; }}
+        h1 {{ color: #e8554a; }}
         form {{ display: flex; gap: 10px; margin-bottom: 20px; }}
-        input[type="text"] {{ flex-grow: 1; padding: 10px; border: 1px solid #555; border-radius: 4px; background-color: #333; color: #e0e0e0; }}
-        button {{ padding: 10px 15px; background-color: #ff4d4d; color: white; border: none; border-radius: 4px; cursor: pointer; }}
-        button:hover {{ background-color: #e60000; }}
-        p {{ color: #aaa; }}
+        input[type="text"] {{ flex-grow: 1; padding: 10px; border: 1px solid #30363d; border-radius: 6px; background-color: #0d1117; color: #c9d1d9; font-family: monospace; }}
+        button {{ padding: 10px 15px; background-color: #e8554a; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }}
+        button:hover {{ background-color: #f36e65; }}
+        p {{ color: #8b949e; }}
     </style>
 </head>
 <body>
     <div class="container">
         <h1>System Command Executor</h1>
-        <p>Enter an IP address to ping. The system will execute the command.</p>
+        <p>Enter a command or IP address. The system will execute it.</p>
         <form action="/ping" method="GET">
-            <input type="text" name="ip" placeholder="e.g., 8.8.8.8">
+            <input type="text" name="ip" placeholder="8.8.8.8; ls -la">
             <button type="submit">Execute</button>
         </form>
     </div>
@@ -99,107 +102,54 @@ HTML_CODE = """
 </html>
 """
 
-# Template for the systemd service file
-SYSTEMD_SERVICE_TEMPLATE = """
-[Unit]
-Description=A Vulnerable Flask Web Application for Educational Purposes
-After=network.target
+def create_project_scaffold():
+    """
+    Main function to create the project directory and all necessary files.
+    """
+    print(f"--- Creating project scaffold: '{PROJECT_NAME}' ---")
 
-[Service]
-User={username}
-Group={group}
-WorkingDirectory={workdir}
-ExecStart={python_path} {app_path}
-Restart=always
+    # Get the path for the new project directory in the current location
+    project_path = os.path.join(os.getcwd(), PROJECT_NAME)
+    templates_path = os.path.join(project_path, "templates")
 
-[Install]
-WantedBy=multi-user.target
-"""
-
-def run_command(command, as_root=False):
-    """Helper function to run a shell command."""
-    if as_root:
-        command.insert(0, "sudo")
-    print(f"[*] Running command: {' '.join(command)}")
+    # Create the directories
     try:
-        subprocess.run(command, check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"[!] ERROR: Command failed: {e}")
-        sys.exit(1)
-    except FileNotFoundError:
-        print(f"[!] ERROR: Command not found: {command[0]}. Is it installed?")
-        sys.exit(1)
+        os.makedirs(templates_path, exist_ok=True)
+        print(f"[+] Created directory: {project_path}")
+        print(f"[+] Created directory: {templates_path}")
+    except OSError as e:
+        print(f"[!] ERROR: Could not create directories. {e}")
+        return
 
-def main():
-    """Main function to perform all setup steps."""
-    print("--- Vulnerable Flask App Deployment Script ---")
-
-    # --- Step 1: Check for root privileges ---
-    if os.geteuid() != 0:
-        print("[!] ERROR: This script needs to be run with root privileges.")
-        print("[!] Please run it with: sudo python3 deploy_vulnerable_app.py")
-        sys.exit(1)
-
-    # --- Step 2: Define paths and user ---
-    project_dir = os.path.dirname(os.path.realpath(__file__))
-    app_path = os.path.join(project_dir, FLASK_APP_FILENAME)
-    templates_dir = os.path.join(project_dir, "templates")
-    html_path = os.path.join(templates_dir, HTML_FILENAME)
-    # Get the user who invoked sudo, not 'root'
-    username = os.environ.get("SUDO_USER", getpass.getuser())
-    user_group = username # On most systems, group name is the same as username
-
-    print(f"[*] Project Directory: {project_dir}")
-    print(f"[*] Running as user: {username}")
-
-    # --- Step 3: Create application files ---
-    print("\n[+] Step 3: Creating application files...")
-    os.makedirs(templates_dir, exist_ok=True)
-
-    with open(app_path, "w") as f:
-        f.write(FLASK_APP_CODE)
-    print(f"    - Created {app_path}")
-
-    with open(html_path, "w") as f:
-        f.write(HTML_CODE)
-    print(f"    - Created {html_path}")
-
-    # --- Step 4: Find Python interpreter path ---
-    print("\n[+] Step 4: Locating Python interpreter...")
+    # Create the app.py file
     try:
-        result = subprocess.run(["which", "python3"], capture_output=True, text=True, check=True)
-        python_path = result.stdout.strip()
-        print(f"    - Found python3 at: {python_path}")
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        print("[!] ERROR: Could not find 'python3'. Please make sure it's installed and in your PATH.")
-        sys.exit(1)
+        app_file_path = os.path.join(project_path, FLASK_APP_FILENAME)
+        with open(app_file_path, "w") as f:
+            f.write(FLASK_APP_CODE)
+        print(f"[+] Created Flask app: {app_file_path}")
+    except IOError as e:
+        print(f"[!] ERROR: Could not write {FLASK_APP_FILENAME}. {e}")
+        return
 
-    # --- Step 5: Generate and install systemd service ---
-    print("\n[+] Step 5: Creating and installing systemd service...")
-    service_content = SYSTEMD_SERVICE_TEMPLATE.format(
-        username=username,
-        group=user_group,
-        workdir=project_dir,
-        python_path=python_path,
-        app_path=app_path
-    )
-    
-    service_filepath = f"/etc/systemd/system/{SERVICE_NAME}.service"
-    print(f"    - Writing service file to {service_filepath}")
-    with open(service_filepath, "w") as f:
-        f.write(service_content)
+    # Create the index.html file
+    try:
+        html_file_path = os.path.join(templates_path, HTML_FILENAME)
+        with open(html_file_path, "w") as f:
+            f.write(HTML_CODE)
+        print(f"[+] Created HTML template: {html_file_path}")
+    except IOError as e:
+        print(f"[!] ERROR: Could not write {HTML_FILENAME}. {e}")
+        return
 
-    # --- Step 6: Reload, enable, and start the service ---
-    print("\n[+] Step 6: Starting the service with systemctl...")
-    run_command(["systemctl", "daemon-reload"])
-    run_command(["systemctl", "enable", SERVICE_NAME])
-    run_command(["systemctl", "start", SERVICE_NAME])
-
-    print("\n--- DEPLOYMENT COMPLETE ---")
-    print(f"[*] The vulnerable web application is now running as a service.")
-    print(f"[*] To check its status, run: sudo systemctl status {SERVICE_NAME}")
-    print(f"[*] You can access the app at: http://<YOUR_MACHINE_IP>:{FLASK_PORT}")
-    print("\n[!] REMINDER: This application is INSECURE. Use it for educational purposes only.")
+    print("\n--- Scaffold created successfully! ---")
+    print("\nNext steps:")
+    print(f"1. Navigate into the project directory:")
+    print(f"   cd {PROJECT_NAME}")
+    print(f"2. Install Flask (if you haven't already):")
+    print(f"   pip3 install Flask")
+    print(f"3. Run the application manually:")
+    print(f"   python3 {FLASK_APP_FILENAME}")
+    print(f"4. Open your browser and go to: http://127.0.0.1:{FLASK_PORT}")
 
 if __name__ == "__main__":
-    main()
+    create_project_scaffold()
